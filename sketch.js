@@ -31,7 +31,15 @@ function draw(){
   background("lightgray");
 
   //pulo do trex
+  if (keyDown("space")) {
+    trex.velocityY = -10
+  }
 
+  // gravidade
+  trex.velocityY += 0.5
+
+  //colisão com o solo
+  trex.collide(ground)
 
 
  
