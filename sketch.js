@@ -43,7 +43,35 @@ function draw() {
   if (ground.x < 0) {
     ground.x = ground.width / 2;
   }
+
+  //chamando a função de gerar nuvens
+  spawnClouds()
+
+
+
   //coordenadas do mouse na tela
   text("X: " + mouseX + " / Y: " + mouseY, mouseX, mouseY);
+  
+  
   drawSprites();
+
+  //contagem de quadros
+  //console.log(frameCount)
+  // if (frameCount%60 == 0) {
+  //   console.log(frameCount)
+  // }
+
+  //números aleatórios
+  // var rand = Math.round(random(1,5)) 
+  // console.log(rand)
+
+  //console.log(Math.round(1.9))
+  //console.log(Math.floor(1.9))
+}
+
+//função para gerar nuvens
+function spawnClouds(){
+  //escreva o código para gerar uma nuvem
+  var cloud = createSprite(600,30,20,20)
+  cloud.velocityX = -2
 }
