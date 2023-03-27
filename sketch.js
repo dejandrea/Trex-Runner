@@ -23,7 +23,6 @@ function preload() {
   obs5 = loadImage("./images/obstacle5.png")
   obs6 = loadImage("./images/obstacle6.png")
 }
-
 //setup faz a configuração
 function setup() {
   createCanvas(600, 200);
@@ -44,43 +43,43 @@ function setup() {
   // console.log("Olá " + nome)
   // console.log("Meu nome é " + nome + " e eu tenho " + idade + " anos")
 }
-
 //draw faz o movimento, a ação do jogo
 function draw() {
   background(190);
 
   if (gameState == PLAY) {
     //o que acontece quando o jogo é play
+    score = Math.round(frameCount/7)
+
+     //pulo do trex
+    if (keyDown("space") && trex.y > 160) {
+      trex.velocityY = -10;
+    }
+    ground.velocityX = -2;
+    if (ground.x < 0) {
+      ground.x = ground.width / 2;
+    }
+
+    //chamando a função de gerar nuvens
+    spawnClouds();
+
+    //chamando a função para gerar cactos
+    spawnObstacles()
+
   }
 
   if (gameState == END) {
     //o que acontece no modo end
   }
-
   textAlign(CENTER,CENTER)
-
   //criando o score
   text("Score: "+score,500,25)
-  score = Math.round(frameCount/7)
 
-  //pulo do trex
 
-  if (keyDown("space") && trex.y > 160) {
-    trex.velocityY = -10;
-  }
+ 
   trex.velocityY += 0.5;
   trex.collide(ground2);
   //console.log(trex.y)
-  ground.velocityX = -2;
-  if (ground.x < 0) {
-    ground.x = ground.width / 2;
-  }
-
-  //chamando a função de gerar nuvens
-  spawnClouds();
-
-  //chamando a função para gerar cactos
-  spawnObstacles()
 
   // console.log(trex.depth)
   // console.log(ground.depth)
