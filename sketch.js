@@ -5,6 +5,10 @@ var groundImage;
 var ground2;
 var cloudImage;
 var obs1,obs2,obs3,obs4,obs5,obs6;
+var score = 0
+const PLAY = 0;
+const END = 1
+var gameState = PLAY
 
 //preload carrega as mídias do jogo
 function preload() {
@@ -35,11 +39,29 @@ function setup() {
   ground.depth = trex.depth-1
   ground2 = createSprite(300, 190, 600, 10);
   ground2.visible = false;
+  var nome = "João"
+  var idade = 15
+  // console.log("Olá " + nome)
+  // console.log("Meu nome é " + nome + " e eu tenho " + idade + " anos")
 }
 
 //draw faz o movimento, a ação do jogo
 function draw() {
   background(190);
+
+  if (gameState == PLAY) {
+    //o que acontece quando o jogo é play
+  }
+
+  if (gameState == END) {
+    //o que acontece no modo end
+  }
+
+  textAlign(CENTER,CENTER)
+
+  //criando o score
+  text("Score: "+score,500,25)
+  score = Math.round(frameCount/7)
 
   //pulo do trex
 
