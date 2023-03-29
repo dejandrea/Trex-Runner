@@ -9,11 +9,14 @@ var score = 0;
 const PLAY = 0;
 const END = 1;
 var gameState = PLAY;
+var gameOver, gameOverImage
+var restart, restartImage
 
 //preload carrega as mídias do jogo
 function preload() {
   //criando animação do trex correndo
   trexRunning = loadAnimation("./images/trex3.png", "./images/trex4.png");
+  trexCollided = loadAnimation("/images/trex_collided.png")
   groundImage = loadImage("./images/ground2.png");
   cloudImage = loadImage("./images/cloud.png");
   obs1 = loadImage("./images/obstacle1.png");
@@ -22,6 +25,8 @@ function preload() {
   obs4 = loadImage("./images/obstacle4.png");
   obs5 = loadImage("./images/obstacle5.png");
   obs6 = loadImage("./images/obstacle6.png");
+  gameOverImage = loadImage("./images/gameOver.png")
+  restartImage = loadImage("./images/restart.png")
 }
 //setup faz a configuração
 function setup() {
@@ -31,6 +36,7 @@ function setup() {
   trex = createSprite(50, 160, 20, 50);
   //adcionando animação ao trex
   trex.addAnimation("running", trexRunning);
+  trex.addAnimation("collided",trexCollided)
   trex.scale = 0.5;
   //sprite Solo
   ground = createSprite(300, 180, 600, 20);
@@ -43,6 +49,19 @@ function setup() {
   cloudsGroup = new Group()
   obstaclesGroup = new Group()
 
+  //criando gameOver
+  gameOver = createSprite(300,100,20,20)
+  gameOver.addImage(gameOverImage)
+  gameOver.scale = 0.5
+  gameOver.visible = false
+
+  //criando Restart
+  restart = createSprite(300,140,20,20)
+  restart.addImage(restartImage)
+  restart.scale = 0.5
+  restart.visible = false
+
+
   // var nome = "João";
   // var idade = 15;
   // console.log("Olá " + nome)
@@ -53,6 +72,7 @@ function draw() {
   background(190);
 
   if (trex.isTouching(obstaclesGroup)) {
+    trex.changeAnimation("collided")
     gameState = END
   }
 
@@ -82,6 +102,9 @@ function draw() {
     //parando os grupos
     obstaclesGroup.setVelocityXEach(0)
     cloudsGroup.setVelocityXEach(0)
+    //fazendo o gameOver aparecer na tela
+    gameOver.visible = true
+    restart.visible = true
   }
   textAlign(CENTER, CENTER);
   //criando o score
