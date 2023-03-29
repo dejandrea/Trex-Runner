@@ -1,14 +1,14 @@
 //declarando as variáveis
-var trex, trexRunning;
+var trex, trexRunning, trexCollided;
 var ground;
 var groundImage;
 var ground2;
-var cloudImage;
-var obs1,obs2,obs3,obs4,obs5,obs6;
-var score = 0
+var cloudImage, cloudsGroup;
+var obs1, obs2, obs3, obs4, obs5, obs6, obstaclesGroup;
+var score = 0;
 const PLAY = 0;
-const END = 1
-var gameState = PLAY
+const END = 1;
+var gameState = PLAY;
 
 //preload carrega as mídias do jogo
 function preload() {
@@ -16,12 +16,12 @@ function preload() {
   trexRunning = loadAnimation("./images/trex3.png", "./images/trex4.png");
   groundImage = loadImage("./images/ground2.png");
   cloudImage = loadImage("./images/cloud.png");
-  obs1 = loadImage("./images/obstacle1.png")
-  obs2 = loadImage("./images/obstacle2.png")
-  obs3 = loadImage("./images/obstacle3.png")
-  obs4 = loadImage("./images/obstacle4.png")
-  obs5 = loadImage("./images/obstacle5.png")
-  obs6 = loadImage("./images/obstacle6.png")
+  obs1 = loadImage("./images/obstacle1.png");
+  obs2 = loadImage("./images/obstacle2.png");
+  obs3 = loadImage("./images/obstacle3.png");
+  obs4 = loadImage("./images/obstacle4.png");
+  obs5 = loadImage("./images/obstacle5.png");
+  obs6 = loadImage("./images/obstacle6.png");
 }
 //setup faz a configuração
 function setup() {
@@ -35,11 +35,16 @@ function setup() {
   //sprite Solo
   ground = createSprite(300, 180, 600, 20);
   ground.addImage(groundImage);
-  ground.depth = trex.depth-1
+  ground.depth = trex.depth - 1;
   ground2 = createSprite(300, 190, 600, 10);
   ground2.visible = false;
-  var nome = "João"
-  var idade = 15
+
+  //criando grupos
+  cloudsGroup = new Group()
+  obstaclesGroup = new Group()
+
+  // var nome = "João";
+  // var idade = 15;
   // console.log("Olá " + nome)
   // console.log("Meu nome é " + nome + " e eu tenho " + idade + " anos")
 }
@@ -47,11 +52,15 @@ function setup() {
 function draw() {
   background(190);
 
+  if (trex.isTouching(obstaclesGroup)) {
+    gameState = END
+  }
+
   if (gameState == PLAY) {
     //o que acontece quando o jogo é play
-    score = Math.round(frameCount/7)
+    score = Math.round(frameCount / 7);
 
-     //pulo do trex
+    //pulo do trex
     if (keyDown("space") && trex.y > 160) {
       trex.velocityY = -10;
     }
@@ -64,90 +73,96 @@ function draw() {
     spawnClouds();
 
     //chamando a função para gerar cactos
-    spawnObstacles()
-
+    spawnObstacles();
   }
 
   if (gameState == END) {
     //o que acontece no modo end
+    ground.velocityX = 0
+    //parando os grupos
+    obstaclesGroup.setVelocityXEach(0)
+    cloudsGroup.setVelocityXEach(0)
   }
-  textAlign(CENTER,CENTER)
+  textAlign(CENTER, CENTER);
   //criando o score
-  text("Score: "+score,500,25)
+  text("Score: " + score, 500, 25);
 
-
- 
   trex.velocityY += 0.5;
-  trex.collide(ground2);
+  trex.collide(ground2); 
   //console.log(trex.y)
 
   // console.log(trex.depth)
   // console.log(ground.depth)
-  
 
   //coordenadas do mouse na tela
   text("X: " + mouseX + " / Y: " + mouseY, mouseX, mouseY);
 
   drawSprites();
-
-
 }
 
-  //contagem de quadros
-  //console.log(frameCount)
-  // if (frameCount%60 == 0) {
-  //   console.log(frameCount)
-  // }
+//contagem de quadros
+//console.log(frameCount)
+// if (frameCount%60 == 0) {
+//   console.log(frameCount)
+// }
 
-  //números aleatórios
-  // var rand = Math.round(random(1,5))
-  // console.log(rand)
+//números aleatórios
+// var rand = Math.round(random(1,5))
+// console.log(rand)
 
-  //arredondando números
-  //console.log(Math.round(1.9)) //arredonda para cima
-  //console.log(Math.floor(1.9)) //arredonda pra baixo
+//arredondando números
+//console.log(Math.round(1.9)) //arredonda para cima
+//console.log(Math.floor(1.9)) //arredonda pra baixo
 
 //função para gerar nuvens
 function spawnClouds() {
   if (frameCount % 90 == 0) {
     var cloud = createSprite(600, 30, 20, 20);
     cloud.velocityX = -2;
-    cloud.addImage(cloudImage)
-    cloud.scale = random(0.3,1.3)
-    cloud.y = random(20,100)
-    cloud.depth = trex.depth-1
+    cloud.addImage(cloudImage);
+    cloud.scale = random(0.3, 1.3);
+    cloud.y = random(20, 100);
+    cloud.depth = trex.depth - 1;
     cloud.lifetime = 400;
-    
+    //adicionando as nuvens ao grupo de nuvens
+    cloudsGroup.add(cloud)
   }
 }
 
 //função para gerar cactos
-function spawnObstacles(){
+function spawnObstacles() {
   if (frameCount % 150 == 0) {
-    var obstacle = createSprite(650,170,20,30)
-    obstacle.velocityX = -2
+    var obstacle = createSprite(650, 170, 20, 30);
+    obstacle.velocityX = -2;
 
     //gerando números aleatórios para imagens do cacto
-    var rand = Math.round(random(1,6))
+    var rand = Math.round(random(1, 6));
     //definindo as imagens dos cactos
     switch (rand) {
-      case 1:obstacle.addImage(obs1) 
+      case 1:
+        obstacle.addImage(obs1);
         break;
-      case 2:obstacle.addImage(obs2) 
+      case 2:
+        obstacle.addImage(obs2);
         break;
-      case 3:obstacle.addImage(obs3) 
+      case 3:
+        obstacle.addImage(obs3);
         break;
-      case 4:obstacle.addImage(obs4) 
+      case 4:
+        obstacle.addImage(obs4);
         break;
-      case 5:obstacle.addImage(obs5) 
+      case 5:
+        obstacle.addImage(obs5);
         break;
-      case 6:obstacle.addImage(obs6) 
+      case 6:
+        obstacle.addImage(obs6);
         break;
       default:
         break;
     }
     obstacle.scale = 0.4;
-    obstacle.depth = trex.depth-1;
+    obstacle.depth = trex.depth - 1;
     obstacle.lifetime = 400;
+    obstaclesGroup.add(obstacle)
   }
 }
