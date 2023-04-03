@@ -38,6 +38,9 @@ function setup() {
   trex.addAnimation("running", trexRunning);
   trex.addAnimation("collided",trexCollided)
   trex.scale = 0.5;
+  trex.debug = false
+  //trex.setCollider("circle",0,0,30)
+  trex.setCollider("rectangle",0,0,30,100,40)
   //sprite Solo
   ground = createSprite(300, 180, 600, 20);
   ground.addImage(groundImage);
@@ -105,6 +108,8 @@ function draw() {
     //fazendo o gameOver aparecer na tela
     gameOver.visible = true
     restart.visible = true
+    obstaclesGroup.setLifetimeEach(-1)
+    cloudsGroup.setLifetimeEach(-1)
   }
   textAlign(CENTER, CENTER);
   //criando o score
