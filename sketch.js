@@ -11,6 +11,10 @@ const END = 1;
 var gameState = PLAY;
 var gameOver, gameOverImage
 var restart, restartImage
+var jump;
+var die 
+var checkPoint
+var isDead = false
 
 //preload carrega as mídias do jogo
 function preload() {
@@ -27,6 +31,10 @@ function preload() {
   obs6 = loadImage("./images/obstacle6.png");
   gameOverImage = loadImage("./images/gameOver.png")
   restartImage = loadImage("./images/restart.png")
+
+  jump = loadSound("./sounds/jump.mp3")
+  die = loadSound("./sounds/die.mp3")
+  checkPoint = loadSound("./sounds/checkPoint.mp3")
 }
 //setup faz a configuração
 function setup() {
@@ -40,7 +48,11 @@ function setup() {
   trex.scale = 0.5;
   trex.debug = false
   //trex.setCollider("circle",0,0,30)
-  trex.setCollider("rectangle",0,0,30,100,40)
+  //trex.setCollider("rectangle",0,0,30,100,40)
+
+  //fazendo o trex IA
+  trex.setCollider("rectangle",0,0,100,100,0)
+
   //sprite Solo
   ground = createSprite(300, 180, 600, 20);
   ground.addImage(groundImage);
@@ -75,19 +87,31 @@ function draw() {
   background(190);
 
   if (trex.isTouching(obstaclesGroup)) {
-    trex.changeAnimation("collided")
-    gameState = END
+    trex.velocityY = -10
+    // trex.changeAnimation("collided")
+    // gameState = END
+
+    // if (!isDead) {
+    //   die.play()
+    //   idDead = true
+    // }
   }
 
   if (gameState == PLAY) {
     //o que acontece quando o jogo é play
     score = Math.round(frameCount / 7);
 
+    if (score % 100 == 0) {
+      checkPoint.play()
+    }
+
     //pulo do trex
     if (keyDown("space") && trex.y > 160) {
       trex.velocityY = -10;
+      jump.play();
     }
-    ground.velocityX = -2;
+
+    ground.velocityX = -(3 + 3*score/100);
     if (ground.x < 0) {
       ground.x = ground.width / 2;
     }
@@ -146,7 +170,7 @@ function draw() {
 function spawnClouds() {
   if (frameCount % 90 == 0) {
     var cloud = createSprite(600, 30, 20, 20);
-    cloud.velocityX = -2;
+    cloud.velocityX = -(3 + 3*score/100);
     cloud.addImage(cloudImage);
     cloud.scale = random(0.3, 1.3);
     cloud.y = random(20, 100);
@@ -161,7 +185,7 @@ function spawnClouds() {
 function spawnObstacles() {
   if (frameCount % 150 == 0) {
     var obstacle = createSprite(650, 170, 20, 30);
-    obstacle.velocityX = -2;
+    obstacle.velocityX = -(3 + 3*score/100);
 
     //gerando números aleatórios para imagens do cacto
     var rand = Math.round(random(1, 6));
