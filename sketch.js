@@ -15,6 +15,7 @@ var jump;
 var die 
 var checkPoint
 var isDead = false
+var highScore = 0
 
 //preload carrega as mídias do jogo
 function preload() {
@@ -48,10 +49,10 @@ function setup() {
   trex.scale = 0.5;
   trex.debug = false
   //trex.setCollider("circle",0,0,30)
-  //trex.setCollider("rectangle",0,0,30,100,40)
+  trex.setCollider("rectangle",0,0,30,100,40)
 
   //fazendo o trex IA
-  trex.setCollider("rectangle",0,0,100,100,0)
+  //trex.setCollider("rectangle",0,0,100,100,0)
 
   //sprite Solo
   ground = createSprite(300, 180, 600, 20);
@@ -85,21 +86,22 @@ function setup() {
 //draw faz o movimento, a ação do jogo
 function draw() {
   background(190);
-
+  
   if (trex.isTouching(obstaclesGroup)) {
-    trex.velocityY = -10
-    // trex.changeAnimation("collided")
-    // gameState = END
+    // trex.velocityY = -10
+    trex.changeAnimation("collided")
+    gameState = END
 
-    // if (!isDead) {
-    //   die.play()
-    //   idDead = true
-    // }
+    if (!isDead) {
+      die.play()
+      isDead = true
+    }
   }
 
   if (gameState == PLAY) {
     //o que acontece quando o jogo é play
-    score = Math.round(frameCount / 7);
+    score = score + Math.round(getFrameRate()/60);
+    
 
     if (score % 100 == 0) {
       checkPoint.play()
@@ -134,18 +136,25 @@ function draw() {
     restart.visible = true
     obstaclesGroup.setLifetimeEach(-1)
     cloudsGroup.setLifetimeEach(-1)
+
+    if (score > highScore) {
+      highScore = score
+    }
+
+    if (mousePressedOver(restart)) {
+      reset()
+    }
   }
   textAlign(CENTER, CENTER);
   //criando o score
   text("Score: " + score, 500, 25);
+  text("HI: " + highScore, 430, 25);
 
   trex.velocityY += 0.5;
   trex.collide(ground2); 
   //console.log(trex.y)
-
   // console.log(trex.depth)
   // console.log(ground.depth)
-
   //coordenadas do mouse na tela
   text("X: " + mouseX + " / Y: " + mouseY, mouseX, mouseY);
 
@@ -217,4 +226,15 @@ function spawnObstacles() {
     obstacle.lifetime = 400;
     obstaclesGroup.add(obstacle)
   }
+}
+
+function reset(){
+  gameState = PLAY;
+  obstaclesGroup.destroyEach()
+  cloudsGroup.destroyEach()
+  trex.changeAnimation("running")
+  restart.visible = false
+  gameOver.visible = false
+
+  score = 0
 }
