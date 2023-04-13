@@ -21,7 +21,7 @@ var highScore = 0
 function preload() {
   //criando animação do trex correndo
   trexRunning = loadAnimation("./images/trex3.png", "./images/trex4.png");
-  trexCollided = loadAnimation("/images/trex_collided.png")
+  trexCollided = loadAnimation("./images/trex_collided.png")
   groundImage = loadImage("./images/ground2.png");
   cloudImage = loadImage("./images/cloud.png");
   obs1 = loadImage("./images/obstacle1.png");
@@ -39,10 +39,10 @@ function preload() {
 }
 //setup faz a configuração
 function setup() {
-  createCanvas(600, 200);
+  createCanvas(600,200);
 
   //sprite trex
-  trex = createSprite(50, 160, 20, 50);
+  trex = createSprite(50, height-40, 20, 50);
   //adcionando animação ao trex
   trex.addAnimation("running", trexRunning);
   trex.addAnimation("collided",trexCollided)
@@ -55,10 +55,10 @@ function setup() {
   //trex.setCollider("rectangle",0,0,100,100,0)
 
   //sprite Solo
-  ground = createSprite(300, 180, 600, 20);
+  ground = createSprite(width/2, height-20, width, 20);
   ground.addImage(groundImage);
   ground.depth = trex.depth - 1;
-  ground2 = createSprite(300, 190, 600, 10);
+  ground2 = createSprite(width/2, height-10, width, 10);
   ground2.visible = false;
 
   //criando grupos
@@ -66,16 +66,27 @@ function setup() {
   obstaclesGroup = new Group()
 
   //criando gameOver
-  gameOver = createSprite(300,100,20,20)
+  gameOver = createSprite(width/2,height-100,20,20)
   gameOver.addImage(gameOverImage)
   gameOver.scale = 0.5
   gameOver.visible = false
 
   //criando Restart
-  restart = createSprite(300,140,20,20)
+  restart = createSprite(width/2,height-60,20,20)
   restart.addImage(restartImage)
   restart.scale = 0.5
   restart.visible = false
+
+  // var trem = ["Andrea","Alexandre"]
+
+  // console.log(trem[1])
+  // trem.push("Breno")
+  // trem.push("Victor")
+  // trem.pop()
+  // trem.push("Iago")
+  // trem.push("Victor")
+  // console.log(trem.length)
+
 
 
   // var nome = "João";
@@ -108,30 +119,26 @@ function draw() {
     }
 
     //pulo do trex
-    if (keyDown("space") && trex.y > 160) {
+    if ((keyDown("space") || touches.length > 0) && trex.y > height-40) {
       trex.velocityY = -10;
       jump.play();
+      touches = []
     }
 
     ground.velocityX = -(3 + 3*score/100);
     if (ground.x < 0) {
       ground.x = ground.width / 2;
     }
-
     //chamando a função de gerar nuvens
     spawnClouds();
-
     //chamando a função para gerar cactos
     spawnObstacles();
   }
 
   if (gameState == END) {
-    //o que acontece no modo end
     ground.velocityX = 0
-    //parando os grupos
     obstaclesGroup.setVelocityXEach(0)
     cloudsGroup.setVelocityXEach(0)
-    //fazendo o gameOver aparecer na tela
     gameOver.visible = true
     restart.visible = true
     obstaclesGroup.setLifetimeEach(-1)
@@ -141,14 +148,15 @@ function draw() {
       highScore = score
     }
 
-    if (mousePressedOver(restart)) {
+    if (mousePressedOver(restart) || touches.length > 0) {
       reset()
+      touches = []
     }
   }
   textAlign(CENTER, CENTER);
   //criando o score
-  text("Score: " + score, 500, 25);
-  text("HI: " + highScore, 430, 25);
+  text("Score: " + score, width-100, height-175);
+  text("HI: " + highScore, width-170, height-175);
 
   trex.velocityY += 0.5;
   trex.collide(ground2); 
@@ -178,13 +186,13 @@ function draw() {
 //função para gerar nuvens
 function spawnClouds() {
   if (frameCount % 90 == 0) {
-    var cloud = createSprite(600, 30, 20, 20);
+    var cloud = createSprite(width, 30, 20, 20);
     cloud.velocityX = -(3 + 3*score/100);
     cloud.addImage(cloudImage);
     cloud.scale = random(0.3, 1.3);
-    cloud.y = random(20, 100);
+    cloud.y = random(height-180, height-100);
     cloud.depth = trex.depth - 1;
-    cloud.lifetime = 400;
+    cloud.lifetime = width/cloud.velocityX;
     //adicionando as nuvens ao grupo de nuvens
     cloudsGroup.add(cloud)
   }
@@ -193,7 +201,7 @@ function spawnClouds() {
 //função para gerar cactos
 function spawnObstacles() {
   if (frameCount % 150 == 0) {
-    var obstacle = createSprite(650, 170, 20, 30);
+    var obstacle = createSprite(width+50, height-30, 20, 30);
     obstacle.velocityX = -(3 + 3*score/100);
 
     //gerando números aleatórios para imagens do cacto
@@ -223,7 +231,7 @@ function spawnObstacles() {
     }
     obstacle.scale = 0.4;
     obstacle.depth = trex.depth - 1;
-    obstacle.lifetime = 400;
+    obstacle.lifetime = width/obstacle.velocityX;
     obstaclesGroup.add(obstacle)
   }
 }
@@ -238,3 +246,5 @@ function reset(){
 
   score = 0
 }
+
+
