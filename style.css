@@ -1,9 +1,14 @@
 html, body {
-  margin: 0;
+  margin: auto ;
+  margin-top: 50px;
   padding: 0;
   display: flex;
+  flex-direction: column;
 }
 canvas {
   display: block;
   align-self: center;
+}
+h1{
+  text-align: center;
 }

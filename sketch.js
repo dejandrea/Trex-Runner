@@ -1,10 +1,11 @@
 //declarando as variáveis
-var trex, trexRunning, trexCollided;
+var trex, trexRunning, trexDowning, trexCollided;
 var ground;
 var groundImage;
 var ground2;
 var cloudImage, cloudsGroup;
 var obs1, obs2, obs3, obs4, obs5, obs6, obstaclesGroup;
+var pteroAnimation,ptero
 var score = 0;
 const PLAY = 0;
 const END = 1;
@@ -22,6 +23,7 @@ function preload() {
   //criando animação do trex correndo
   trexRunning = loadAnimation("./images/trex3.png", "./images/trex4.png");
   trexCollided = loadAnimation("./images/trex_collided.png")
+  trexDowning = loadAnimation("./images/trex5.png","./images/trex6.png")
   groundImage = loadImage("./images/ground2.png");
   cloudImage = loadImage("./images/cloud.png");
   obs1 = loadImage("./images/obstacle1.png");
@@ -30,6 +32,7 @@ function preload() {
   obs4 = loadImage("./images/obstacle4.png");
   obs5 = loadImage("./images/obstacle5.png");
   obs6 = loadImage("./images/obstacle6.png");
+  pteroAnimation = loadAnimation("./images/ptero1.png","./images/ptero2.png")
   gameOverImage = loadImage("./images/gameOver.png")
   restartImage = loadImage("./images/restart.png")
 
@@ -37,7 +40,7 @@ function preload() {
   die = loadSound("./sounds/die.mp3")
   checkPoint = loadSound("./sounds/checkPoint.mp3")
 }
-//setup faz a configuração
+
 function setup() {
   createCanvas(600,200);
 
@@ -45,11 +48,12 @@ function setup() {
   trex = createSprite(50, height-40, 20, 50);
   //adcionando animação ao trex
   trex.addAnimation("running", trexRunning);
-  trex.addAnimation("collided",trexCollided)
+  trex.addAnimation("collided",trexCollided);
+  trex.addAnimation("downing",trexDowning);
   trex.scale = 0.5;
   trex.debug = false
   //trex.setCollider("circle",0,0,30)
-  trex.setCollider("rectangle",0,0,30,100,40)
+  trex.setCollider("rectangle",0,0,90,30,120)
 
   //fazendo o trex IA
   //trex.setCollider("rectangle",0,0,100,100,0)
@@ -77,24 +81,8 @@ function setup() {
   restart.scale = 0.5
   restart.visible = false
 
-  // var trem = ["Andrea","Alexandre"]
-
-  // console.log(trem[1])
-  // trem.push("Breno")
-  // trem.push("Victor")
-  // trem.pop()
-  // trem.push("Iago")
-  // trem.push("Victor")
-  // console.log(trem.length)
-
-
-
-  // var nome = "João";
-  // var idade = 15;
-  // console.log("Olá " + nome)
-  // console.log("Meu nome é " + nome + " e eu tenho " + idade + " anos")
 }
-//draw faz o movimento, a ação do jogo
+
 function draw() {
   background(190);
   
@@ -110,10 +98,9 @@ function draw() {
   }
 
   if (gameState == PLAY) {
-    //o que acontece quando o jogo é play
-    score = score + Math.round(getFrameRate()/60);
-    
 
+    score = score + Math.round((getFrameRate()/60));
+   
     if (score % 100 == 0) {
       checkPoint.play()
     }
@@ -125,13 +112,20 @@ function draw() {
       touches = []
     }
 
-    ground.velocityX = -(3 + 3*score/100);
+    if (keyDown("down")) {
+      trex.changeAnimation("downing")
+      trex.setCollider("rectangle",0,0,100,60,0)
+    }else{
+      trex.changeAnimation("running")
+      trex.setCollider("rectangle",0,0,90,30,120)
+    }
+    ground.velocityX = -(2 + 2*score/100);
     if (ground.x < 0) {
       ground.x = ground.width / 2;
     }
-    //chamando a função de gerar nuvens
+
     spawnClouds();
-    //chamando a função para gerar cactos
+
     spawnObstacles();
   }
 
@@ -160,16 +154,13 @@ function draw() {
 
   trex.velocityY += 0.5;
   trex.collide(ground2); 
-  //console.log(trex.y)
-  // console.log(trex.depth)
-  // console.log(ground.depth)
-  //coordenadas do mouse na tela
+
   text("X: " + mouseX + " / Y: " + mouseY, mouseX, mouseY);
 
   drawSprites();
 }
 
-//contagem de quadros
+
 //console.log(frameCount)
 // if (frameCount%60 == 0) {
 //   console.log(frameCount)
@@ -187,7 +178,7 @@ function draw() {
 function spawnClouds() {
   if (frameCount % 90 == 0) {
     var cloud = createSprite(width, 30, 20, 20);
-    cloud.velocityX = -(3 + 3*score/100);
+    cloud.velocityX = -(2 + 2*score/100);
     cloud.addImage(cloudImage);
     cloud.scale = random(0.3, 1.3);
     cloud.y = random(height-180, height-100);
@@ -198,14 +189,14 @@ function spawnClouds() {
   }
 }
 
-//função para gerar cactos
 function spawnObstacles() {
   if (frameCount % 150 == 0) {
     var obstacle = createSprite(width+50, height-30, 20, 30);
-    obstacle.velocityX = -(3 + 3*score/100);
+    obstacle.velocityX = -(2 + 2*score/100);
 
+    var pteroPos = [height-40,height-70,height-50]
     //gerando números aleatórios para imagens do cacto
-    var rand = Math.round(random(1, 6));
+    var rand = Math.round(random(1, 7));
     //definindo as imagens dos cactos
     switch (rand) {
       case 1:
@@ -226,6 +217,10 @@ function spawnObstacles() {
       case 6:
         obstacle.addImage(obs6);
         break;
+      case 7: 
+        obstacle.addAnimation("ptero",pteroAnimation)
+        obstacle.y = random(pteroPos)
+        break
       default:
         break;
     }
